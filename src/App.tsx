@@ -32,6 +32,10 @@ import BooksPage from "./pages/BooksPage";
 import BookCategoryPage from "./pages/BookCategoryPage";
 import SemesterSubjectPYQPage from "./pages/SemesterSubjectPYQPage";
 
+/* ===== Resources ===== */
+
+import ResourcesPage from "@/pages/ResourcesPage";
+
 
 
 
@@ -96,6 +100,8 @@ const App = () => (
               </RequireAdmin>
             }
           />
+          {/* Resources */}
+          <Route path="/resources" element={<ResourcesPage />} />
       
 
 {/* books */}

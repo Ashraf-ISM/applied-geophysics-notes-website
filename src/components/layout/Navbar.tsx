@@ -11,6 +11,7 @@ const navLinks = [
   { name: "Materials", path: "/materials" },
   { name: "About", path: "/about" },
   { name: "Books", path: "/books" },
+  { name: "Resources", path: "/resources" }, // ✅ ADD THIS
 
 ];
 
