@@ -5,12 +5,12 @@
 <div align="center">
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/YOUR_USERNAME/YOUR_REPO/ci.yml?style=flat-square&label=Build)](https://github.com/YOUR_USERNAME/YOUR_REPO)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](./LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg?style=flat-square)](./LICENSE)
 [![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev)
 [![React](https://img.shields.io/badge/React-18.x-61DAFB?style=flat-square&logo=react&logoColor=black)](https://reactjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=flat-square&logo=vercel)](https://vercel.com)
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?style=flat-square&logo=vercel)](https://vercel.com)
 
 </div>
 
@@ -18,7 +18,7 @@
 
 ## 📌 Overview
 
-The **Applied Geophysics Notes Website** is a structured, student-driven academic platform developed for the Department of Applied Geophysics at **IIT (ISM) Dhanbad**. It aggregates subject-wise notes, categorized books, and semester-wise Previous Year Question (PYQ) papers into a single, fast, and accessible web application.
+The **Applied Geophysics Notes Website** is a structured, student-driven academic platform for the Department of Applied Geophysics at **IIT (ISM) Dhanbad**. It aggregates subject-wise notes, categorized reference books, and semester-wise Previous Year Question (PYQ) papers into a single, fast, and accessible web application.
 
 Built with a component-based architecture on top of **Vite + React + TypeScript**, the platform prioritizes performance, maintainability, and scalability — designed to serve as the definitive digital knowledge base for geophysics students, researchers, and competitive exam aspirants.
 
@@ -30,40 +30,42 @@ Geophysics as a discipline suffers from a fragmented academic resource landscape
 
 The long-term vision is to build an **open-access, community-maintained geophysics knowledge base** comparable to top academic wikis and course repositories — one that:
 
-- Eliminates information asymmetry between senior and junior students
-- Provides structured, semester-aligned study resources
-- Scales beyond IIT (ISM) to serve geophysics students at institutions across India and globally
-- Evolves into a research and publication discovery layer for the geosciences community
+- 🌐 **Eliminates information asymmetry** between senior and junior students
+- 📚 **Provides structured, semester-aligned** study resources for all subjects
+- 🌍 **Scales beyond IIT (ISM)** to serve geophysics students at institutions globally
+- 🔬 **Evolves into a research layer** for paper discovery and citation in the geosciences
 
-This is not just a notes website. It is infrastructure for academic excellence.
+> This is not just a notes website. It is infrastructure for academic excellence.
 
 ---
 
 ## ✨ Features
 
-- **Subject-wise Notes** — Organized, semester-aligned geophysics notes across all core and elective subjects
-- **Book Categorization** — Reference books indexed and filtered by subject, author, and relevance
-- **Semester-wise PYQs** — Previous Year Question papers organized by semester and subject with direct download
-- **Fast Performance** — Powered by Vite's lightning-fast HMR and optimized production builds
-- **Type-safe Codebase** — Full TypeScript coverage ensures reliability and developer confidence
-- **Responsive UI** — Tailwind CSS utility-first design works seamlessly across all screen sizes
-- **Modular Architecture** — Component-based structure makes the codebase easy to extend and maintain
-- **Expandable Platform** — Architecture supports future addition of blog posts, research papers, and community Q&A
+| Feature | Description |
+|---|---|
+| 📚 Subject-wise Notes | Semester-aligned notes across all core and elective subjects |
+| 📖 Book Categorization | Reference books indexed by subject, author, and relevance |
+| 📄 Semester-wise PYQs | Past papers by semester and subject with direct PDF download |
+| ⚡ Fast Performance | Vite-powered HMR and optimized production builds |
+| 🔷 Type-safe Codebase | Full TypeScript coverage for reliability at scale |
+| 📱 Fully Responsive | Seamless experience across desktop, tablet, and mobile |
+| 🧩 Modular Architecture | Component-based structure for easy extension and maintenance |
+| 🔮 Expandable Platform | Ready for blog, research papers, and community Q&A |
 
 ---
 
 ## 🛠 Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend Framework | React 18 |
-| Build Tool | Vite 5 |
-| Language | TypeScript 5 |
-| Styling | Tailwind CSS 3 |
-| Routing | React Router DOM |
-| Icons | Lucide React |
-| Deployment | Vercel |
-| Version Control | Git & GitHub |
+| Layer | Technology | Version |
+|---|---|---|
+| Build Tool | Vite | 5.x |
+| Frontend Framework | React | 18.x |
+| Language | TypeScript | 5.x |
+| Styling | Tailwind CSS | 3.x |
+| Routing | React Router DOM | 6.x |
+| Icons | Lucide React | Latest |
+| Deployment | Vercel | — |
+| Version Control | Git & GitHub | — |
 
 ---
 
@@ -75,10 +77,10 @@ geophysics-hub/
 ├── src/
 │   ├── components/             # Reusable UI components
 │   │   ├── home/               # Homepage-specific components
-│   │   ├── layout/             # Layout wrappers (Navbar, Footer, Layout)
-│   │   ├── materials/          # Materials & notes components
-│   │   └── ui/                 # Base UI primitives (Button, Card, Badge, etc.)
-│   ├── data/                   # Static data files (subjects, books, PYQs)
+│   │   ├── layout/             # Navbar, Footer, Layout wrapper
+│   │   ├── materials/          # Notes & materials components
+│   │   └── ui/                 # Base UI primitives (Button, Card, Badge…)
+│   ├── data/                   # Static typed data files
 │   │   ├── books.ts
 │   │   ├── pyqData.ts
 │   │   ├── semesterPYQs.ts
@@ -95,21 +97,16 @@ geophysics-hub/
 │   │   ├── LoginPage.tsx
 │   │   ├── MaterialsPage.tsx
 │   │   ├── PYQPage.tsx
-│   │   ├── SemesterPYQPage.tsx
 │   │   ├── SemesterSubjectPYQPage.tsx
 │   │   ├── SubjectsPage.tsx
 │   │   └── NotFound.tsx
 │   ├── App.tsx                 # Root component with route definitions
-│   ├── App.css
 │   ├── index.css               # Global styles & Tailwind directives
 │   └── main.tsx                # Application entry point
-├── .gitignore
 ├── index.html                  # Vite HTML entry
 ├── package.json
 ├── tailwind.config.js
 ├── tsconfig.json
-├── tsconfig.app.json
-├── tsconfig.node.json
 └── vite.config.ts
 ```
 
@@ -119,13 +116,11 @@ geophysics-hub/
 
 ### Prerequisites
 
-Ensure the following are installed on your system:
-
 - [Node.js](https://nodejs.org/) `>= 18.x`
-- [npm](https://www.npmjs.com/) `>= 9.x` or [pnpm](https://pnpm.io/) `>= 8.x`
-- [Git](https://git-scm.com/)
+- npm `>= 9.x` or pnpm `>= 8.x`
+- Git
 
-### Setup
+### Steps
 
 **1. Clone the repository**
 
@@ -138,17 +133,15 @@ cd YOUR_REPO
 
 ```bash
 npm install
-# or
-pnpm install
+# or: pnpm install
 ```
 
 **3. Start the development server**
 
 ```bash
 npm run dev
+# → http://localhost:8080
 ```
-
-The application will be available at `http://localhost:8080` (or the port specified in `vite.config.ts`).
 
 **4. Lint the codebase**
 
@@ -162,55 +155,37 @@ npm run lint
 
 ### Production Build
 
-Generate an optimized production bundle:
-
 ```bash
-npm run build
+npm run build          # → outputs to /dist
+npm run preview        # preview production build locally
 ```
 
-Output will be placed in the `dist/` directory.
+### Deploy to Vercel
 
-**Preview the production build locally:**
-
-```bash
-npm run preview
-```
-
-### Deploying to Vercel
-
-This project is configured for zero-configuration deployment on [Vercel](https://vercel.com).
-
-**Option 1 — Vercel CLI (recommended)**
+**Option 1 — Vercel CLI**
 
 ```bash
 npm install -g vercel
 vercel
+# Framework: Vite · Build Command: npm run build · Output: dist
 ```
-
-Follow the prompts. Vercel will auto-detect the Vite framework and configure the build settings.
 
 **Option 2 — Vercel Dashboard**
 
 1. Push your repository to GitHub
-2. Visit [vercel.com/new](https://vercel.com/new) and import the repository
-3. Vercel will automatically detect:
-   - **Framework:** Vite
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
-4. Click **Deploy**
+2. Visit [vercel.com/new](https://vercel.com/new) → Import repository
+3. Vercel auto-detects Vite — click **Deploy**
 
-**Environment Variables**
+### Environment Variables
 
-If the project requires environment variables, create a `.env.local` file at the project root:
+Create `.env.local` at the project root:
 
 ```env
-VITE_API_URL=https://your-api-endpoint.com
 VITE_SITE_TITLE=Applied Geophysics Notes
+VITE_API_URL=https://your-api-endpoint.com
 ```
 
-> ⚠️ Prefix all Vite environment variables with `VITE_` to expose them to the client bundle. Never commit secrets to version control.
-
-Add the same variables in the **Vercel Dashboard → Project Settings → Environment Variables** for production.
+> ⚠️ All client-exposed variables must be prefixed with `VITE_`. Never commit secrets. Add the same variables in **Vercel Dashboard → Project → Environment Variables**.
 
 ---
 
@@ -218,79 +193,69 @@ Add the same variables in the **Vercel Dashboard → Project Settings → Enviro
 
 Contributions from students, faculty, and developers are welcome. This project is community-driven and improves with every pull request.
 
-### Contribution Workflow
-
-**1. Fork the repository**
+### Workflow
 
 ```bash
-# Click "Fork" on GitHub, then clone your fork
+# 1. Fork and clone your fork
 git clone https://github.com/YOUR_FORK/YOUR_REPO.git
+
+# 2. Create a feature branch
+git checkout -b feat/your-feature-name
+
+# 3. Commit with Conventional Commits
+git commit -m "feat: add semester III PYQ for Seismology"
+
+# 4. Push and open a Pull Request
+git push origin feat/your-feature-name
 ```
 
-**2. Create a feature branch**
+### Commit Convention
 
-```bash
-git checkout -b feature/your-feature-name
-# or for fixes:
-git checkout -b fix/issue-description
-```
+| Prefix | Purpose |
+|---|---|
+| `feat:` | New feature |
+| `fix:` | Bug fix |
+| `docs:` | Documentation update |
+| `data:` | Academic content added or updated |
+| `style:` | Formatting, no logic change |
+| `refactor:` | Code restructuring |
 
-**3. Make your changes and commit**
+### Guidelines
 
-```bash
-git add .
-git commit -m "feat: add semester III PYQ papers for Seismology"
-```
-
-Follow [Conventional Commits](https://www.conventionalcommits.org/) for commit messages:
-- `feat:` — new feature
-- `fix:` — bug fix
-- `docs:` — documentation changes
-- `style:` — formatting, no logic change
-- `refactor:` — code restructuring
-- `data:` — adding or updating academic data/content
-
-**4. Push and open a Pull Request**
-
-```bash
-git push origin feature/your-feature-name
-```
-
-Open a PR against the `main` branch with a clear description of your changes.
-
-### Contribution Guidelines
-
-- Add notes, PYQs, or books by updating the relevant files in `src/data/`
-- Follow existing TypeScript interfaces when adding new data entries
-- Do not commit large binary files — link PDFs via external storage (Google Drive, S3, etc.)
-- Ensure the app builds successfully (`npm run build`) before submitting a PR
+- Add notes, PYQs, or books via `src/data/` — follow existing TypeScript interfaces
+- Do not commit large binary files — link PDFs via Google Drive or external storage
+- Ensure `npm run build` passes before submitting a PR
 
 ---
 
-## 🗺 Future Roadmap
+## 🗺 Roadmap
 
-The following features and expansions are planned for future releases:
+### v1.x — Core Platform
 
-| Milestone | Feature | Status |
-|---|---|---|
-| v1.1 | Search across all subjects and PYQs | 🔜 Planned |
-| v1.2 | Blog section for academic articles | 🔜 Planned |
-| v1.3 | User authentication & bookmarks | 🔜 Planned |
-| v2.0 | Admin CMS for content management | 🔜 Planned |
-| v2.1 | Research paper discovery layer | 🔜 Planned |
-| v2.2 | Community Q&A / discussion threads | 🔜 Planned |
-| v3.0 | Multi-institution support | 🔜 Planned |
-| v3.1 | Mobile app (React Native) | 🔜 Planned |
+- [ ] Global search across subjects, PYQs, and books
+- [ ] Bookmark and save resources
+- [ ] Dark / Light theme toggle
 
-### Scalability Considerations
+### v2.x — Community Features
 
-The current architecture is intentionally data-driven via static TypeScript files in `src/data/`, making it trivial to migrate to a headless CMS (Contentful, Sanity) or a REST/GraphQL API backend as content volume grows. The component structure supports lazy loading and route-based code splitting without architectural refactoring.
+- [ ] Blog section for academic articles
+- [ ] User authentication and personalization
+- [ ] Admin CMS for content management
+
+### v3.x — Research Platform
+
+- [ ] Research paper discovery and citation layer
+- [ ] Community Q&A and discussion threads
+- [ ] Multi-institution support
+- [ ] Native mobile app (React Native)
+
+> **Scalability note:** The current data-driven architecture (static TypeScript in `src/data/`) makes migration to a headless CMS or REST/GraphQL API trivial as content volume grows — no architectural refactoring required.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see the [LICENSE](./LICENSE) file for full details.
+This project is licensed under the **MIT License** — see [LICENSE](./LICENSE) for details.
 
 Academic content (notes, PYQs, books) contributed to this platform remains the intellectual property of their respective authors and institutions. This platform serves purely as an organizational and accessibility layer.
 
@@ -298,9 +263,8 @@ Academic content (notes, PYQs, books) contributed to this platform remains the i
 
 ## 👤 Author
 
-**Md Ashraf**
-Department of Applied Geophysics
-IIT (ISM) Dhanbad, Jharkhand 826004
+**Md Ashraf**  
+Department of Applied Geophysics · IIT (ISM) Dhanbad, Jharkhand 826004
 
 [![GitHub](https://img.shields.io/badge/GitHub-@YOUR_USERNAME-181717?style=flat-square&logo=github)](https://github.com/YOUR_USERNAME)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat-square&logo=linkedin)](https://linkedin.com/in/YOUR_PROFILE)
@@ -314,6 +278,6 @@ IIT (ISM) Dhanbad, Jharkhand 826004
 
 *Building open knowledge infrastructure for the geosciences community.*
 
-⭐ If this platform has helped your studies, consider starring the repository — it helps others discover it.
+⭐ **If this platform helped your studies, star the repository — it helps others discover it.**
 
 </div>
