@@ -108,9 +108,9 @@ export default function HomePage() {
               <span className="text-sm text-primary-foreground/80">Department of Applied Geophysics</span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 leading-tight">
-              Your Gateway to
-              <span className="block text-accent">Geophysics Excellence</span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-8 leading-tight">
+              Academic Resources for
+              <span className="block text-accent">Next Generation of Geophysicists</span>
             </h1>
             
             <p className="text-lg md:text-xl text-primary-foreground/80 mb-8 leading-relaxed max-w-2xl">
@@ -139,11 +139,11 @@ export default function HomePage() {
                 <div className="text-sm text-primary-foreground/70">Study Materials</div>
               </div>
               <div>
-                <div className="text-3xl md:text-4xl font-bold text-primary-foreground">6</div>
+                <div className="text-3xl md:text-4xl font-bold text-primary-foreground">6+</div>
                 <div className="text-sm text-primary-foreground/70">Core Subjects</div>
               </div>
               <div>
-                <div className="text-3xl md:text-4xl font-bold text-primary-foreground">500+</div>
+                <div className="text-3xl md:text-4xl font-bold text-primary-foreground">50+</div>
                 <div className="text-sm text-primary-foreground/70">Active Users</div>
               </div>
             </div>
