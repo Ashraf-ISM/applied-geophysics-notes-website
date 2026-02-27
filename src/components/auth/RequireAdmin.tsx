@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { isLocalAdmin } from "@/lib/authSession";
 
 export default function RequireAdmin({
   children,
@@ -12,6 +13,12 @@ export default function RequireAdmin({
 
   useEffect(() => {
     const checkAdmin = async () => {
+      if (isLocalAdmin()) {
+        setIsAdmin(true);
+        setLoading(false);
+        return;
+      }
+
       const {
         data: { user },
       } = await supabase.auth.getUser();

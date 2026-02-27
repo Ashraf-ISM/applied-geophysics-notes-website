@@ -1,7 +1,7 @@
-import { FileText, Download, Lock, Calendar, BookOpen, Bookmark, ScrollText, Book } from "lucide-react";
+import { Download, Lock, Calendar, BookOpen, Bookmark, ScrollText, Book } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import type { Material } from "@/pages/MaterialsPage";
+import type { Material } from "@/data/materials";
 
 const typeConfig = {
   pyq: { label: "PYQ", icon: ScrollText, color: "bg-blue-100 text-blue-700" },
@@ -13,9 +13,12 @@ const typeConfig = {
 interface MaterialCardProps {
   material: Material;
   delay?: number;
+  isBookmarked?: boolean;
+  onBookmark?: (material: Material) => void;
+  onOpen?: (material: Material) => void;
 }
 
-export function MaterialCard({ material, delay = 0 }: MaterialCardProps) {
+export function MaterialCard({ material, delay = 0, isBookmarked = false, onBookmark, onOpen }: MaterialCardProps) {
   const typeInfo = typeConfig[material.type];
   const TypeIcon = typeInfo.icon;
   const isRestricted = material.accessLevel === "ism-only";
@@ -70,19 +73,25 @@ export function MaterialCard({ material, delay = 0 }: MaterialCardProps) {
         <span className="text-xs font-medium text-primary">
           {material.subjectLabel}
         </span>
-        <Button size="sm" variant={isRestricted ? "outline" : "default"}>
-          {isRestricted ? (
-            <>
-              <Lock className="w-3.5 h-3.5 mr-1" />
-              Login Required
-            </>
-          ) : (
-            <>
-              <Download className="w-3.5 h-3.5 mr-1" />
-              Download
-            </>
-          )}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => onBookmark?.(material)}>
+            <Bookmark className="w-3.5 h-3.5 mr-1" />
+            {isBookmarked ? "Saved" : "Save"}
+          </Button>
+          <Button size="sm" variant={isRestricted ? "outline" : "default"} onClick={() => onOpen?.(material)}>
+            {isRestricted ? (
+              <>
+                <Lock className="w-3.5 h-3.5 mr-1" />
+                Login Required
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5 mr-1" />
+                Download
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );

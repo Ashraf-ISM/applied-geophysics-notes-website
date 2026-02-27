@@ -36,12 +36,12 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/materials" className="footer-link">
+                <Link to="/ism-library" className="footer-link">
                   All Materials
                 </Link>
               </li>
               <li>
-                <Link to="/materials?type=pyq" className="footer-link">
+                <Link to="/ism-library?type=pyq" className="footer-link">
                   Previous Year Questions
                 </Link>
               </li>

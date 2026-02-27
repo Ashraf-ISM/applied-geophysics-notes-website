@@ -16,6 +16,9 @@ import {
   BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useMemo, useState } from "react";
+import { ResourceFilterBar } from "@/components/resources/ResourceFilterBar";
+import { filterAndSortResources, type ResourceSortKey } from "@/lib/resourceSearch";
 
 const examCategories = [
   {
@@ -109,6 +112,29 @@ const features = [
 ];
 
 export default function PYQPage() {
+  const [query, setQuery] = useState("");
+  const [difficultyFilter, setDifficultyFilter] = useState("all");
+  const [sortBy, setSortBy] = useState<ResourceSortKey>("relevance");
+
+  const filteredExamCategories = useMemo(() => {
+    return filterAndSortResources({
+      items: examCategories,
+      query,
+      sortBy,
+      searchableText: (exam) => [exam.title, exam.description, exam.difficulty, exam.badge, exam.id],
+      predicates: [
+        (exam) => difficultyFilter === "all" || exam.difficulty.toLowerCase() === difficultyFilter,
+      ],
+      getTitle: (exam) => exam.title,
+    });
+  }, [difficultyFilter, query, sortBy]);
+
+  const clearFilters = () => {
+    setQuery("");
+    setDifficultyFilter("all");
+    setSortBy("relevance");
+  };
+
   return (
     <Layout>
       {/* HERO SECTION */}
@@ -158,6 +184,39 @@ export default function PYQPage() {
       {/* COMPETITIVE EXAM PYQs */}
       <section className="py-20 md:py-28">
         <div className="container mx-auto px-4">
+          <ResourceFilterBar
+            query={query}
+            onQueryChange={setQuery}
+            onClear={clearFilters}
+            queryPlaceholder="Search exam category, topic, or level..."
+            filters={[
+              {
+                id: "difficulty",
+                label: "Difficulty",
+                value: difficultyFilter,
+                onChange: setDifficultyFilter,
+                options: [
+                  { value: "all", label: "All Difficulty" },
+                  { value: "advanced", label: "Advanced" },
+                  { value: "intermediate", label: "Intermediate" },
+                  { value: "professional", label: "Professional" },
+                  { value: "varied", label: "Varied" },
+                ],
+              },
+              {
+                id: "sort",
+                label: "Sort",
+                value: sortBy,
+                onChange: (value) => setSortBy(value as ResourceSortKey),
+                options: [
+                  { value: "relevance", label: "Sort: Relevance" },
+                  { value: "title-asc", label: "Sort: Name A-Z" },
+                ],
+              },
+            ]}
+            className="mb-10"
+          />
+
           <div className="max-w-3xl mx-auto text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10 mb-4">
               <Award className="h-4 w-4 text-primary" />
@@ -169,16 +228,20 @@ export default function PYQPage() {
             <p className="text-muted-foreground text-lg">
               Access comprehensive question banks from major geophysics competitive examinations
             </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Showing {filteredExamCategories.length} of {examCategories.length} exam categories
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-            {examCategories.map((exam, index) => (
-              <Link
-                key={exam.id}
-                to={`/pyq/${exam.id}`}
-                className="group relative"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
+          {filteredExamCategories.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+              {filteredExamCategories.map((exam, index) => (
+                <Link
+                  key={exam.id}
+                  to={`/pyq/${exam.id}`}
+                  className="group relative"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
                 {/* Gradient Background */}
                 <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${exam.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
                 
@@ -230,9 +293,15 @@ export default function PYQPage() {
                     <ChevronRight className="h-5 w-5 group-hover/cta:translate-x-1 transition-transform" />
                   </div>
                 </div>
-              </Link>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="mb-16 rounded-2xl border border-border bg-card p-10 text-center">
+              <p className="text-lg font-semibold">No exam categories match this filter.</p>
+              <p className="mt-2 text-sm text-muted-foreground">Try clearing filters or searching broader keywords.</p>
+            </div>
+          )}
 
           {/* Features Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">

@@ -2,18 +2,17 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Layout } from "@/components/layout/Layout";
 import { SubjectCard } from "@/components/home/SubjectCard";
-import { FeatureCard } from "@/components/home/FeatureCard";
 import { StatsSection } from "@/components/home/StatsSection";
-import { 
-  ArrowRight, 
-  BookOpen, 
-  FileText, 
-  Download, 
-  Shield, 
-  Users, 
-  Search,
+import {
+  ArrowRight,
+  BriefcaseBusiness,
   ChevronRight,
-  BriefcaseBusiness
+  Compass,
+  Database,
+  FileCheck2,
+  Globe2,
+  Shield,
+  Users,
 } from "lucide-react";
 import heroImage from "@/assets/hero-geophysics.jpg";
 
@@ -62,213 +61,248 @@ const subjects = [
   },
 ];
 
-const features = [
+const capabilityBlocks = [
   {
-    icon: BookOpen,
-    title: "Comprehensive Library",
-    description: "Access PYQs, class notes, reference materials, and standard textbooks in one place",
+    icon: Compass,
+    title: "Exploration Decision-Making",
+    description:
+      "Learn to convert geophysical signals into exploration decisions using uncertainty-aware interpretation.",
+  },
+  {
+    icon: Database,
+    title: "Integrated Subsurface Workflows",
+    description:
+      "Connect seismic, logs, and reservoir data in one analytical path used in real subsurface teams.",
+  },
+  {
+    icon: FileCheck2,
+    title: "Interview-Ready Narratives",
+    description:
+      "Build project narratives with assumptions, trade-offs, and business impact expected in senior interview rounds.",
   },
   {
     icon: Shield,
-    title: "Verified Content",
-    description: "All materials are curated and verified by faculty and senior students",
+    title: "Faculty-Verified Standards",
+    description:
+      "Use reviewed and structured learning assets mapped to core geophysics competencies.",
+  },
+];
+
+const journeyPhases = [
+  {
+    step: "01",
+    title: "Core Concepts",
+    detail: "Master wave propagation, inversion fundamentals, and potential field interpretation.",
   },
   {
-    icon: Download,
-    title: "Easy Downloads",
-    description: "Download PDFs instantly with organized categorization by subject and type",
+    step: "02",
+    title: "Applied Analysis",
+    detail: "Practice processing workflows and integrated interpretation using archived PYQs and notes.",
   },
   {
-    icon: Users,
-    title: "ISM Community",
-    description: "Exclusive access to internal materials for verified IIT (ISM) students",
+    step: "03",
+    title: "Industry Context",
+    detail: "Align technical preparation with exploration, reservoir, and production business objectives.",
   },
   {
-    icon: BriefcaseBusiness,
-    title: "Interview Preparation",
-    description: "Company-wise strategy and interview questions for top energy recruiters",
+    step: "04",
+    title: "Career Execution",
+    detail: "Use company-specific interview strategy and case simulations to perform in final rounds.",
   },
 ];
 
 export default function HomePage() {
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center overflow-hidden">
-        {/* Background Image */}
+      <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img 
-            src={heroImage} 
-            alt="Geophysics visualization" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/85 to-primary/70" />
-          <div className="absolute inset-0 bg-gradient-to-t from-primary/50 to-transparent" />
+          <img src={heroImage} alt="Geophysical seismic interpretation" className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-900/88 to-slate-900/72" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 to-transparent" />
         </div>
 
-        <div className="container relative z-10 mx-auto px-4 py-20 md:py-32">
-          <div className="max-w-3xl animate-fade-in-up">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 mb-6">
-              <span className="text-sm font-medium text-primary-foreground">IIT (ISM) Dhanbad</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-              <span className="text-sm text-primary-foreground/80">Department of Applied Geophysics</span>
-            </div>
-            
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-8 leading-tight">
-              Academic Resources for
-              <span className="block text-accent">Next Generation of Geophysicists</span>
-            </h1>
-            
-            <p className="text-lg md:text-xl text-primary-foreground/80 mb-8 leading-relaxed max-w-2xl">
-              A centralized digital library for academic resources — PYQs, class notes, reference materials, 
-              and textbooks curated for geophysics students and researchers.
-            </p>
+        <div className="container relative z-10 mx-auto px-4 py-20 md:py-28 lg:py-32">
+          <div className="grid items-end gap-8 lg:grid-cols-12">
+            <div className="lg:col-span-8">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-100 backdrop-blur-sm">
+                <Globe2 className="h-4 w-4 text-emerald-300" />
+                IIT (ISM) Applied Geophysics Knowledge Platform
+              </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/materials">
-                <Button variant="hero" size="xl">
-                  Browse Resources
-                  <ArrowRight className="h-5 w-5" />
-                </Button>
-              </Link>
-              <Link to="/subjects">
-                <Button variant="heroOutline" size="xl">
-                  Explore Subjects
-                </Button>
-              </Link>
+              <h1 className="max-w-4xl text-4xl font-black leading-tight text-white md:text-5xl lg:text-6xl">
+                Built for Geophysicists Who Want
+                <span className="block text-emerald-300">Industry-Level Depth, Not Surface-Level Notes</span>
+              </h1>
+
+              <p className="mt-6 max-w-3xl text-base text-slate-200 md:text-lg">
+                A professional learning system that mirrors how experienced exploration and reservoir teams think: problem framing,
+                uncertainty handling, integrated interpretation, and decision-driven communication.
+              </p>
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link to="/ism-library">
+                  <Button variant="hero" size="xl">
+                    Enter Resource Library
+                    <ArrowRight className="h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link to="/interview-prep">
+                  <Button variant="heroOutline" size="xl">
+                    Open Interview Strategy
+                  </Button>
+                </Link>
+              </div>
             </div>
 
-            {/* Quick Stats */}
-            <div className="mt-12 pt-8 border-t border-primary-foreground/20 grid grid-cols-3 gap-8">
-              <div>
-                <div className="text-3xl md:text-4xl font-bold text-primary-foreground">240+</div>
-                <div className="text-sm text-primary-foreground/70">Study Materials</div>
+            <aside className="lg:col-span-4">
+              <div className="rounded-2xl border border-white/20 bg-white/10 p-6 text-white shadow-2xl backdrop-blur-md">
+                <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-200">Professional Focus</h2>
+                <div className="mt-5 space-y-4">
+                  <div className="rounded-lg border border-white/10 bg-black/20 p-4">
+                    <p className="text-2xl font-extrabold">240+</p>
+                    <p className="text-xs uppercase tracking-wide text-slate-300">Structured Materials</p>
+                  </div>
+                  <div className="rounded-lg border border-white/10 bg-black/20 p-4">
+                    <p className="text-2xl font-extrabold">6+</p>
+                    <p className="text-xs uppercase tracking-wide text-slate-300">Core Geophysics Domains</p>
+                  </div>
+                  <div className="rounded-lg border border-white/10 bg-black/20 p-4">
+                    <p className="text-2xl font-extrabold">Role-Based</p>
+                    <p className="text-xs uppercase tracking-wide text-slate-300">Exploration to Reservoir Readiness</p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <div className="text-3xl md:text-4xl font-bold text-primary-foreground">6+</div>
-                <div className="text-sm text-primary-foreground/70">Core Subjects</div>
-              </div>
-              <div>
-                <div className="text-3xl md:text-4xl font-bold text-primary-foreground">50+</div>
-                <div className="text-sm text-primary-foreground/70">Active Users</div>
-              </div>
-            </div>
+            </aside>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-secondary/50">
+      <section className="bg-slate-50 py-16 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Everything You Need to Excel
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Access comprehensive academic resources organized for efficient learning
+          <div className="mb-10 flex flex-col gap-3">
+            <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">How Experienced Teams Build Competence</h2>
+            <p className="max-w-3xl text-slate-600">
+              This platform is organized around field-tested competency areas used by professionals across exploration, interpretation,
+              and development workflows.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
-            {features.map((feature, index) => (
-              <FeatureCard 
-                key={feature.title} 
-                {...feature} 
-                delay={index * 100}
-              />
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            {capabilityBlocks.map((block) => {
+              const Icon = block.icon;
+              return (
+                <article key={block.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                  <div className="mb-4 inline-flex rounded-xl bg-slate-900 p-2.5 text-emerald-300">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900">{block.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{block.description}</p>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16 md:py-20">
+        <div className="container mx-auto px-4">
+          <div className="mb-10 flex flex-col gap-3">
+            <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">From Classroom Learning to Industry Execution</h2>
+            <p className="max-w-3xl text-slate-600">
+              Follow a structured progression designed to move students from fundamentals to confident performance in technical and
+              interview settings.
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {journeyPhases.map((phase) => (
+              <div key={phase.step} className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p className="text-sm font-bold tracking-widest text-emerald-700">PHASE {phase.step}</p>
+                <h3 className="mt-2 text-xl font-bold text-slate-900">{phase.title}</h3>
+                <p className="mt-2 text-sm text-slate-600">{phase.detail}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Interview Prep Highlight */}
-      <section className="py-20 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800">
+      <section className="bg-slate-900 py-16 text-white md:py-20">
         <div className="container mx-auto px-4">
-          <div className="rounded-2xl border border-white/15 bg-white/5 p-8 md:p-12">
-            <div className="max-w-3xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-emerald-200">
+          <div className="grid gap-8 rounded-2xl border border-white/10 bg-white/5 p-8 md:grid-cols-12 md:items-center md:p-10">
+            <div className="md:col-span-8">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-300/10 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-emerald-200">
                 <BriefcaseBusiness className="h-4 w-4" />
-                New Career Section
+                Career Track
               </div>
-              <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">
-                Interview Preparation by Company
-              </h2>
-              <p className="mb-8 text-base text-slate-200 md:text-lg">
-                Get advanced interview strategy and frequently asked questions for Reliance, ExxonMobil, BP, Chevron, Cairn Oil & Gas, and ONGC.
+              <h2 className="text-3xl font-bold md:text-4xl">Interview Preparation by Recruiter and Role Type</h2>
+              <p className="mt-3 max-w-2xl text-slate-200">
+                Prepare with company-wise technical priorities, HR expectations, and case discussion themes across top energy and
+                geoscience employers.
               </p>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Link to="/interview-prep">
-                  <Button variant="hero" size="xl">
-                    Open Interview Prep
-                    <ArrowRight className="h-5 w-5" />
-                  </Button>
-                </Link>
-                <Link to="/interview-prep/company-questions">
-                  <Button variant="heroOutline" size="xl">
-                    Company Questions
-                  </Button>
-                </Link>
-              </div>
+            </div>
+            <div className="flex flex-col gap-3 md:col-span-4 md:items-end">
+              <Link to="/interview-prep">
+                <Button variant="hero" size="xl">
+                  Launch Interview Hub
+                  <ArrowRight className="h-5 w-5" />
+                </Button>
+              </Link>
+              <Link to="/interview-prep/company-questions" className="inline-flex items-center gap-1 text-sm text-emerald-200 transition hover:gap-2">
+                Explore Company Questions
+                <ChevronRight className="h-4 w-4" />
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Subjects Section */}
-      <section className="py-20">
+      <section className="bg-white py-16 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12 gap-4">
+          <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Browse by Subject
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-xl">
-                Explore our comprehensive collection organized by core geophysics disciplines
-              </p>
+              <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">Browse by Core Discipline</h2>
+              <p className="max-w-xl text-slate-600">Choose a domain and access targeted notes, PYQs, and supporting references.</p>
             </div>
-            <Link to="/subjects" className="flex items-center gap-1 text-primary font-medium hover:gap-2 transition-all">
-              View All Subjects
+            <Link to="/subjects" className="inline-flex items-center gap-1 font-medium text-primary transition hover:gap-2">
+              View Full Subject Directory
               <ChevronRight className="h-4 w-4" />
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {subjects.map((subject, index) => (
-              <SubjectCard 
-                key={subject.id} 
-                {...subject} 
-                delay={index * 100}
-              />
+              <SubjectCard key={subject.id} {...subject} delay={index * 100} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
       <StatsSection />
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-primary text-primary-foreground">
+      <section className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 py-16 text-white md:py-20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Access Premium Resources?
-          </h2>
-          <p className="text-lg text-primary-foreground/80 mb-8 max-w-2xl mx-auto">
-            IIT (ISM) students get exclusive access to internal class notes and materials. 
-            Verify your institutional email to unlock the complete library.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/login?register=true">
-              <Button variant="hero" size="xl">
-                Register with ISM Email
-                <ArrowRight className="h-5 w-5" />
-              </Button>
-            </Link>
-            <Link to="/materials">
-              <Button variant="heroOutline" size="xl">
-                Browse Public Resources
-              </Button>
-            </Link>
+          <div className="mx-auto max-w-3xl">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-100">
+              <Users className="h-4 w-4" />
+              Institutional Access
+            </div>
+            <h2 className="text-3xl font-bold md:text-4xl">Access the Full Professional Resource Stack</h2>
+            <p className="mt-4 text-slate-200">
+              IIT (ISM) students can unlock internal class materials and structured preparation tracks through verified login.
+            </p>
+            <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+              <Link to="/login">
+                <Button variant="hero" size="xl">
+                  Verify Account
+                  <ArrowRight className="h-5 w-5" />
+                </Button>
+              </Link>
+              <Link to="/ism-library">
+                <Button variant="heroOutline" size="xl">
+                  Open Materials
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

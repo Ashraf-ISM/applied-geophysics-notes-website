@@ -36,7 +36,7 @@ export function SubjectCard({ id, name, description, icon, materialCount, delay 
 
   return (
     <Link
-      to={`/materials?subject=${id}`}
+      to={`/ism-library?subject=${id}`}
       className="group block animate-fade-in-up"
       style={{ animationDelay: `${delay}ms` }}
       onMouseEnter={() => setIsHovered(true)}

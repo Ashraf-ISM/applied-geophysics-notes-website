@@ -2,14 +2,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 /* ===== Pages ===== */
 import HomePage from "./pages/HomePage";
 import SubjectsPage from "./pages/SubjectsPage";
 import SubjectDetailPage from "./pages/SubjectDetailPage";
 
-import MaterialsPage from "./pages/MaterialsPage";
 import LoginPage from "./pages/LoginPage";
 import ISMLibraryPage from "./pages/ISMLibraryPage";
 import AboutPage from "./pages/AboutPage";
@@ -33,6 +32,7 @@ import BookCategoryPage from "./pages/BookCategoryPage";
 import SemesterSubjectPYQPage from "./pages/SemesterSubjectPYQPage";
 import InterviewPrepPage from "./pages/InterviewPrepPage";
 import InterviewCompanyPrepPage from "./pages/InterviewCompanyPrepPage";
+import DashboardPage from "./pages/DashboardPage";
 
 /* ===== Resources ===== */
 
@@ -70,7 +70,7 @@ const App = () => (
             path="/materials"
             element={
               <RequireAuth>
-                <MaterialsPage />
+                <Navigate to="/ism-library" replace />
               </RequireAuth>
             }
           />
@@ -80,6 +80,15 @@ const App = () => (
             element={
               <RequireAuth>
                 <ISMLibraryPage />
+              </RequireAuth>
+            }
+          />
+
+          <Route
+            path="/dashboard"
+            element={
+              <RequireAuth>
+                <DashboardPage />
               </RequireAuth>
             }
           />

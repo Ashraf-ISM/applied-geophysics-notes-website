@@ -1,11 +1,89 @@
 import { Layout } from "@/components/layout/Layout";
 import { books } from "@/data/books";
 import { Button } from "@/components/ui/button";
-import { Download, BookOpen, User, ExternalLink, Star, ArrowRight, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { Download, BookOpen, User, ExternalLink, Star, ArrowRight, Sparkles, Bookmark, Check } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ResourceFilterBar } from "@/components/resources/ResourceFilterBar";
+import { filterAndSortResources, type ResourceSortKey } from "@/lib/resourceSearch";
+import { addBookmark, addRecentItem, loadDashboardState, removeBookmark } from "@/lib/studentDashboard";
+
+type Book = (typeof books)[number];
 
 export default function BooksPage() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [query, setQuery] = useState("");
+  const [authorFilter, setAuthorFilter] = useState("all");
+  const [sourceFilter, setSourceFilter] = useState("all");
+  const [sortBy, setSortBy] = useState<ResourceSortKey>("relevance");
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(
+    () => new Set(loadDashboardState().bookmarks.map((item) => item.id)),
+  );
+
+  const getBookId = (book: Book) => `book:${book.title}:${book.author}`;
+
+  const handleOpenBook = (book: Book) => {
+    addRecentItem({
+      id: getBookId(book),
+      title: book.title,
+      subtitle: book.author,
+      type: "book",
+      href: book.pdf,
+    });
+    window.open(book.pdf, "_blank");
+  };
+
+  const toggleBookmark = (book: Book) => {
+    const id = getBookId(book);
+    const isSaved = bookmarkedIds.has(id);
+
+    if (isSaved) {
+      removeBookmark(id);
+      setBookmarkedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      return;
+    }
+
+    addBookmark({
+      id,
+      title: book.title,
+      subtitle: book.author,
+      type: "book",
+      href: book.pdf,
+    });
+    setBookmarkedIds((prev) => new Set(prev).add(id));
+  };
+
+  const authorOptions = useMemo(() => {
+    return Array.from(new Set(books.map((book) => book.author))).sort((a, b) => a.localeCompare(b));
+  }, []);
+
+  const filteredBooks = useMemo(() => {
+    return filterAndSortResources<Book>({
+      items: books,
+      query,
+      sortBy,
+      searchableText: (book) => [book.title, book.author],
+      predicates: [
+        (book) => authorFilter === "all" || book.author === authorFilter,
+        (book) => {
+          if (sourceFilter === "all") return true;
+          const isExternal = book.pdf.startsWith("http");
+          return sourceFilter === "external" ? isExternal : !isExternal;
+        },
+      ],
+      getTitle: (book) => book.title,
+    });
+  }, [authorFilter, query, sourceFilter, sortBy]);
+
+  const clearFilters = () => {
+    setQuery("");
+    setAuthorFilter("all");
+    setSourceFilter("all");
+    setSortBy("relevance");
+  };
 
   return (
     <Layout>
@@ -55,22 +133,68 @@ export default function BooksPage() {
       {/* Books Grid with 3D Cards */}
       <section className="py-24 bg-gradient-to-b from-white to-slate-50 dark:from-slate-950 dark:to-slate-900">
         <div className="container mx-auto px-4">
+          <div className="mb-8">
+            <ResourceFilterBar
+              query={query}
+              onQueryChange={setQuery}
+              onClear={clearFilters}
+              queryPlaceholder="Search by title or author..."
+              filters={[
+                {
+                  id: "author",
+                  label: "Author",
+                  value: authorFilter,
+                  onChange: setAuthorFilter,
+                  options: [
+                    { value: "all", label: "All Authors" },
+                    ...authorOptions.map((author) => ({ value: author, label: author })),
+                  ],
+                },
+                {
+                  id: "source",
+                  label: "Source",
+                  value: sourceFilter,
+                  onChange: setSourceFilter,
+                  options: [
+                    { value: "all", label: "All Sources" },
+                    { value: "local", label: "Local Library" },
+                    { value: "external", label: "External Links" },
+                  ],
+                },
+                {
+                  id: "sort",
+                  label: "Sort",
+                  value: sortBy,
+                  onChange: (value) => setSortBy(value as ResourceSortKey),
+                  options: [
+                    { value: "relevance", label: "Sort: Relevance" },
+                    { value: "title-asc", label: "Sort: Title A-Z" },
+                  ],
+                },
+              ]}
+            />
+          </div>
+
           {/* Section Header */}
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
               Featured Textbooks
             </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+              Showing {filteredBooks.length} of {books.length} resources
+            </p>
             <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 mx-auto rounded-full" />
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {books.map((book, index) => (
-              <div
-                key={index}
-                className="group relative"
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              >
+          {filteredBooks.length > 0 ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {filteredBooks.map((book, index) => (
+                <div
+                  key={`${book.title}-${book.author}-${index}`}
+                  className="group relative"
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                >
                 {/* Card with 3D Effect */}
                 <div className="relative bg-white dark:bg-slate-900 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl border border-slate-200 dark:border-slate-800 transition-all duration-500 hover:-translate-y-3 hover:scale-[1.02]">
                   
@@ -105,7 +229,7 @@ export default function BooksPage() {
                       <Button
                         size="sm"
                         className="bg-white text-slate-900 hover:bg-slate-100 shadow-xl font-semibold"
-                        onClick={() => window.open(book.pdf, "_blank")}
+                        onClick={() => handleOpenBook(book)}
                       >
                         <BookOpen className="h-4 w-4 mr-2" />
                         Quick View
@@ -132,14 +256,24 @@ export default function BooksPage() {
                     <div className="h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-700 to-transparent" />
 
                     {/* Action Button */}
-                    <Button
-                      className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 font-semibold group/btn"
-                      onClick={() => window.open(book.pdf, "_blank")}
-                    >
-                      <Download className="h-4 w-4 mr-2 transition-transform group-hover/btn:translate-y-0.5" />
-                      <span>Download PDF</span>
-                      <ExternalLink className="h-3.5 w-3.5 ml-2 opacity-70 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
-                    </Button>
+                    <div className="grid grid-cols-1 gap-2">
+                      <Button
+                        className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 font-semibold group/btn"
+                        onClick={() => handleOpenBook(book)}
+                      >
+                        <Download className="h-4 w-4 mr-2 transition-transform group-hover/btn:translate-y-0.5" />
+                        <span>Download PDF</span>
+                        <ExternalLink className="h-3.5 w-3.5 ml-2 opacity-70 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => toggleBookmark(book)}
+                      >
+                        {bookmarkedIds.has(getBookId(book)) ? <Check className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
+                        {bookmarkedIds.has(getBookId(book)) ? "Saved to Dashboard" : "Save to Dashboard"}
+                      </Button>
+                    </div>
                   </div>
 
                   {/* Corner Decoration */}
@@ -152,8 +286,14 @@ export default function BooksPage() {
                 {/* Floating Shadow Effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-3xl blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 -z-10" />
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">No books match these filters.</p>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Try clearing filters or broadening your search.</p>
+            </div>
+          )}
         </div>
       </section>
 

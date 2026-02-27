@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, GraduationCap, Lock, LogIn, FileText, Shield } from "lucide-react";
+import { Menu, X, GraduationCap, Lock, LogIn, Shield } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { isLocalAdmin } from "@/lib/authSession";
 
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "Subjects", path: "/subjects" },
   { name: "PYQs", path: "/pyq" },          // ✅ ADDED
-  { name: "Materials", path: "/materials" },
   { name: "About", path: "/about" },
   { name: "Books", path: "/books" },
   { name: "Resources", path: "/resources" }, // ✅ ADD THIS
   { name: "Interview Prep", path: "/interview-prep" },
+  { name: "Dashboard", path: "/dashboard" },
 
 ];
 
@@ -23,6 +24,11 @@ export function Navbar() {
 
   // 🔐 Check admin role
   useEffect(() => {
+    if (isLocalAdmin()) {
+      setIsAdmin(true);
+      return;
+    }
+
     supabase.auth.getUser().then(({ data }) => {
       setIsAdmin(data.user?.user_metadata?.role === "ADMIN");
     });

@@ -15,6 +15,7 @@ import {
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "../lib/supabase";
+import { setLocalAuthSession, clearLocalAuthSession } from "@/lib/authSession";
 
 
 export default function LoginPage() {
@@ -44,9 +45,42 @@ export default function LoginPage() {
     e.preventDefault();
 
     const { email, password } = loginData;
+    const usernameOrEmail = email.trim();
+
+    // Local admin fallback login
+    if (usernameOrEmail.toLowerCase() === "ashraf" && password === "23mc0049") {
+      setLocalAuthSession({
+        username: "Ashraf",
+        role: "ADMIN",
+        loggedInAt: new Date().toISOString(),
+      });
+      toast.success("Admin login successful");
+      navigate("/admin");
+      return;
+    }
+
+    // ISM local student login:
+    // Pattern: 2**mc****@iitism.ac.in
+    // Password: same as email prefix (before @iitism.ac.in)
+    const ismPattern = /^2\d*mc\d{4}@iitism\.ac\.in$/i;
+    if (ismPattern.test(usernameOrEmail)) {
+      const expectedPassword = usernameOrEmail.split("@")[0].toLowerCase();
+      if (password.toLowerCase() === expectedPassword) {
+        setLocalAuthSession({
+          username: expectedPassword,
+          role: "ISM_STUDENT",
+          loggedInAt: new Date().toISOString(),
+        });
+        toast.success("ISM login successful");
+        navigate("/ism-library");
+        return;
+      }
+      toast.error("Invalid ISM credentials");
+      return;
+    }
 
     const { error } = await supabase.auth.signInWithPassword({
-      email,
+      email: usernameOrEmail,
       password,
     });
 
@@ -55,8 +89,9 @@ export default function LoginPage() {
       return;
     }
 
+    clearLocalAuthSession();
     toast.success("Login successful");
-    navigate("/materials");
+    navigate("/ism-library");
   };
 
   /* =========================
@@ -132,8 +167,8 @@ export default function LoginPage() {
                       <div className="relative mt-1.5">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
-                          type="email"
-                          placeholder="your.email@iitism.ac.in"
+                          type="text"
+                          placeholder="Username or your.email@iitism.ac.in"
                           className="pl-10"
                           value={loginData.email}
                           onChange={(e) =>
@@ -180,6 +215,13 @@ export default function LoginPage() {
                     <Button type="submit" className="w-full" size="lg">
                       Sign In <ArrowRight className="w-4 h-4" />
                     </Button>
+
+                    <p className="text-xs text-muted-foreground">
+                      Admin access: use username <span className="font-semibold">Ashraf</span>
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      ISM access: email <span className="font-semibold">2*mc****@iitism.ac.in</span> and password = email prefix
+                    </p>
                   </form>
                 </TabsContent>
 

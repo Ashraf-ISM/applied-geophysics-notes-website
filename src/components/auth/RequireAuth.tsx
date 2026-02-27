@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { hasLocalAuthSession } from "@/lib/authSession";
 
 export default function RequireAuth({
   children,
@@ -11,6 +12,12 @@ export default function RequireAuth({
   const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
+    if (hasLocalAuthSession()) {
+      setIsAuth(true);
+      setLoading(false);
+      return;
+    }
+
     supabase.auth.getUser().then(({ data }) => {
       setIsAuth(!!data.user);
       setLoading(false);
