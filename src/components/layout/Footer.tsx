@@ -46,6 +46,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link to="/interview-prep" className="footer-link">
+                  Interview Preparation
+                </Link>
+              </li>
+              <li>
                 <Link to="/ism-library" className="footer-link">
                   ISM Library
                 </Link>

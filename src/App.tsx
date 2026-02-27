@@ -31,6 +31,8 @@ import AdminUpload from "./pages/admin/AdminUpload";
 import BooksPage from "./pages/BooksPage";
 import BookCategoryPage from "./pages/BookCategoryPage";
 import SemesterSubjectPYQPage from "./pages/SemesterSubjectPYQPage";
+import InterviewPrepPage from "./pages/InterviewPrepPage";
+import InterviewCompanyPrepPage from "./pages/InterviewCompanyPrepPage";
 
 /* ===== Resources ===== */
 
@@ -102,6 +104,8 @@ const App = () => (
           />
           {/* Resources */}
           <Route path="/resources" element={<ResourcesPage />} />
+          <Route path="/interview-prep" element={<InterviewPrepPage />} />
+          <Route path="/interview-prep/company-questions" element={<InterviewCompanyPrepPage />} />
       
 
 {/* books */}

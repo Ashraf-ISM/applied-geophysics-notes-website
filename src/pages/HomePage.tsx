@@ -12,7 +12,8 @@ import {
   Shield, 
   Users, 
   Search,
-  ChevronRight
+  ChevronRight,
+  BriefcaseBusiness
 } from "lucide-react";
 import heroImage from "@/assets/hero-geophysics.jpg";
 
@@ -81,6 +82,11 @@ const features = [
     icon: Users,
     title: "ISM Community",
     description: "Exclusive access to internal materials for verified IIT (ISM) students",
+  },
+  {
+    icon: BriefcaseBusiness,
+    title: "Interview Preparation",
+    description: "Company-wise strategy and interview questions for top energy recruiters",
   },
 ];
 
@@ -163,7 +169,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
             {features.map((feature, index) => (
               <FeatureCard 
                 key={feature.title} 
@@ -171,6 +177,39 @@ export default function HomePage() {
                 delay={index * 100}
               />
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Interview Prep Highlight */}
+      <section className="py-20 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800">
+        <div className="container mx-auto px-4">
+          <div className="rounded-2xl border border-white/15 bg-white/5 p-8 md:p-12">
+            <div className="max-w-3xl">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-emerald-200">
+                <BriefcaseBusiness className="h-4 w-4" />
+                New Career Section
+              </div>
+              <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">
+                Interview Preparation by Company
+              </h2>
+              <p className="mb-8 text-base text-slate-200 md:text-lg">
+                Get advanced interview strategy and frequently asked questions for Reliance, ExxonMobil, BP, Chevron, Cairn Oil & Gas, and ONGC.
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Link to="/interview-prep">
+                  <Button variant="hero" size="xl">
+                    Open Interview Prep
+                    <ArrowRight className="h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link to="/interview-prep/company-questions">
+                  <Button variant="heroOutline" size="xl">
+                    Company Questions
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>

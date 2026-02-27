@@ -97,6 +97,20 @@ const semesterData = [
     badgeText: "text-emerald-700",
     number: "05",
   },
+  {
+    id: "sem6",
+    title: "Semester VI",
+    subtitle: "Thesis & Advanced Topics",
+    description: "Thesis work and advanced research topics",
+    subjects: [ "Thesis Research", "Seismological Data Analysis", "Carbon Capture and Storage" ],
+    gradient: "from-blue-500 to-cyan-500",
+    lightGradient: "from-blue-50 to-cyan-50",
+    borderColor: "border-blue-200",
+    badgeBg: "bg-blue-100",
+    badgeText: "text-blue-700",
+    number: "06",
+  },
+  
 ];
 
 export default function SemesterPYQPage() {

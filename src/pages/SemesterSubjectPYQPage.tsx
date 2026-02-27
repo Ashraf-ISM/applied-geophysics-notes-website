@@ -10,6 +10,15 @@ import {
 } from "lucide-react";
 import { semesterPYQs } from "@/data/semesterPYQs";
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+interface PaperEntry {
+  year: number;
+  pdf: string;
+  type?: string;
+  label?: string;
+}
+
+// ─── Subject catalogue (for metadata only) ────────────────────────────────────
 const SUBJECT_CATALOGUE = [
   { name: "Seismic Data Acquisition", code: "GEP-401", icon: <Radio size={17} />, domain: "Seismics", level: "Advanced", levelColor: "#b45309", levelBg: "#fef3c7", description: "Field techniques, receiver arrays, source mechanisms & 2D/3D seismic survey design for land and marine environments", tags: ["Field Methods", "Survey Design", "Signal Processing"] },
   { name: "Seismic Processing & Interpretation", code: "GEP-402", icon: <Waves size={17} />, domain: "Seismics", level: "Professional", levelColor: "#991b1b", levelBg: "#fee2e2", description: "NMO correction, migration, deconvolution, attribute analysis & structural horizon mapping from seismic data", tags: ["Migration", "Attributes", "Velocity Analysis"] },
@@ -26,6 +35,9 @@ const SUBJECT_CATALOGUE = [
   { name: "Borehole Geophysics", code: "GEP-304", icon: <BarChart2 size={17} />, domain: "Borehole", level: "Advanced", levelColor: "#b45309", levelBg: "#fef3c7", description: "VSP surveys, cross-hole seismic tomography, acoustic, sonic & downhole measurement methods", tags: ["VSP", "Cross-hole", "Acoustic Logging"] },
   { name: "Mathematics for Geophysics", code: "GEP-102", icon: <BookOpen size={17} />, domain: "Mathematics", level: "Core", levelColor: "#5b21b6", levelBg: "#ede9fe", description: "Vector calculus, complex variable theory, probability & statistics applied to geophysical inverse problems", tags: ["Vector Calculus", "Statistics", "Complex Analysis"] },
   { name: "Physics for Earth Sciences", code: "GEP-103", icon: <Zap size={17} />, domain: "Physics", level: "Core", levelColor: "#5b21b6", levelBg: "#ede9fe", description: "Elasticity theory, seismic wave mechanics, classical electrodynamics & thermodynamics fundamentals", tags: ["Wave Mechanics", "Elasticity", "Electrodynamics"] },
+  { name: "Seismological Data Analysis", code: "GEP-601", icon: <Waves size={17} />, domain: "Seismology", level: "Advanced", levelColor: "#b45309", levelBg: "#fef3c7", description: "Advanced techniques in seismological data processing, waveform analysis & interpretation", tags: ["Waveform", "Data Processing", "Analysis"] },
+  { name: "Carbon Capture and Storage", code: "GEP-602", icon: <Database size={17} />, domain: "Applied", level: "Advanced", levelColor: "#b45309", levelBg: "#fef3c7", description: "Geological storage of CO2, monitoring techniques, risk assessment and geophysical methods for CCS", tags: ["CO2 Storage", "Monitoring", "Risk Assessment"] },
+  { name: "Near Surface Geophysics", code: "GEP-603", icon: <Crosshair size={17} />, domain: "Applied", level: "Intermediate", levelColor: "#1e40af", levelBg: "#dbeafe", description: "Shallow subsurface investigations using seismic, EM & potential field methods for engineering & environmental applications", tags: ["Shallow Seismic", "GPR", "Environmental"] },
 ];
 
 const DC: Record<string, { fg: string; bg: string; bd: string }> = {
@@ -41,56 +53,107 @@ const DC: Record<string, { fg: string; bg: string; bd: string }> = {
   "Exploration":      { fg: "#365314", bg: "#f7fee7", bd: "#bef264" },
   "Borehole":         { fg: "#581c87", bg: "#f3e8ff", bd: "#d8b4fe" },
   "Physics":          { fg: "#1e3a5f", bg: "#dbeafe", bd: "#93c5fd" },
+  "Applied":          { fg: "#065f46", bg: "#d1fae5", bd: "#6ee7b7" },
 };
 
-function getMeta(name: string) {
-  return SUBJECT_CATALOGUE.find(s =>
-    s.name.toLowerCase().includes(name.toLowerCase().slice(0, 12)) ||
-    name.toLowerCase().includes(s.name.toLowerCase().slice(0, 12))
-  ) ?? { name, code: "GEP-???", icon: <FileText size={17} />, domain: "General", level: "Intermediate", levelColor: "#374151", levelBg: "#f3f4f6", description: "Comprehensive study material and previous year examination papers", tags: ["Theory", "Applications"] };
-}
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function getET(paper: { year: number; type?: string; title?: string }): "mid" | "end" | "quiz" {
-  const t = (paper.type ?? paper.title ?? "").toLowerCase();
-  if (t.includes("quiz") || t.includes("class")) return "quiz";
-  if (t.includes("mid")) return "mid";
-  if (t.includes("end") || t.includes("final")) return "end";
+/**
+ * Classify a paper as "mid" | "end" | "quiz"
+ * Priority: explicit `type` field → filename keywords → fallback
+ */
+function getET(paper: PaperEntry): "mid" | "end" | "quiz" {
+  const t = (paper.type ?? "").toLowerCase();
+  if (t === "mid")  return "mid";
+  if (t === "end")  return "end";
+  if (t === "quiz") return "quiz";
+
+  // Fallback: sniff the PDF filename / path
+  const path = (paper.pdf ?? "").toLowerCase();
+  if (path.includes("quiz") || path.includes("class-test") || path.includes("ct"))  return "quiz";
+  if (path.includes("mid"))  return "mid";
+  if (path.includes("end") || path.includes("final")) return "end";
+
+  // Last resort: year modulo (deterministic but arbitrary)
   const m = paper.year % 3;
   return m === 0 ? "quiz" : m === 1 ? "mid" : "end";
 }
 
+function getMeta(name: string) {
+  return (
+    SUBJECT_CATALOGUE.find(
+      s =>
+        s.name.toLowerCase() === name.toLowerCase() ||
+        s.name.toLowerCase().includes(name.toLowerCase().slice(0, 14)) ||
+        name.toLowerCase().includes(s.name.toLowerCase().slice(0, 14))
+    ) ?? {
+      name,
+      code: "GEP-???",
+      icon: <FileText size={17} />,
+      domain: "General",
+      level: "Intermediate",
+      levelColor: "#374151",
+      levelBg: "#f3f4f6",
+      description: "Comprehensive study material and previous year examination papers",
+      tags: ["Theory", "Applications"],
+    }
+  );
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
 export default function SemesterSubjectPYQPage() {
   const { semId } = useParams<{ semId: string }>();
-  const [q, setQ] = useState("");
-  const [yr, setYr] = useState<number | null>(null);
-  const [cat, setCat] = useState<"mid"|"end"|"quiz"|null>(null);
-  const [exp, setExp] = useState<string|null>(null);
-  const [dom, setDom] = useState<string|null>(null);
+  const [q, setQ]     = useState("");
+  const [yr, setYr]   = useState<number | null>(null);
+  const [cat, setCat] = useState<"mid" | "end" | "quiz" | null>(null);
+  const [exp, setExp] = useState<string | null>(null);
+  const [dom, setDom] = useState<string | null>(null);
 
-  const sem = semId ? semesterPYQs[semId as keyof typeof semesterPYQs] : null;
-  const title = sem?.title ?? `Semester ${semId?.replace("sem","") ?? ""}`;
+  const sem   = semId ? semesterPYQs[semId as keyof typeof semesterPYQs] : null;
+  const title = sem?.title ?? `Semester ${semId?.replace("sem", "") ?? ""}`;
 
-  const subs = useMemo(() => {
-    const r: Record<string,{year:number;pdf:string;type?:string}[]> = sem?.subjects ?? {};
-    const m = {...r};
-    SUBJECT_CATALOGUE.forEach(s => {
-      const ex = Object.keys(m).some(k => k.toLowerCase().includes(s.name.toLowerCase().slice(0,12)) || s.name.toLowerCase().includes(k.toLowerCase().slice(0,12)));
-      if (!ex) m[s.name] = [];
-    });
-    return m;
-  }, [sem]);
+  // ── Only use subjects defined in the data file (no catalogue padding) ──────
+  const subs = useMemo<Record<string, PaperEntry[]>>(
+    () => (sem?.subjects as Record<string, PaperEntry[]>) ?? {},
+    [sem]
+  );
 
-  const years  = useMemo(() => { const y=new Set<number>(); Object.values(subs).forEach(p=>p.forEach(x=>y.add(x.year))); return Array.from(y).sort((a,b)=>b-a); }, [subs]);
-  const doms   = useMemo(() => { const d=new Set<string>(); Object.keys(subs).forEach(s=>d.add(getMeta(s).domain)); return Array.from(d); }, [subs]);
-  const total  = useMemo(() => Object.values(subs).reduce((a,p)=>a+p.length,0), [subs]);
-  const midT   = useMemo(() => Object.values(subs).reduce((a,p)=>a+p.filter(x=>getET(x)==="mid").length,0), [subs]);
-  const endT   = useMemo(() => Object.values(subs).reduce((a,p)=>a+p.filter(x=>getET(x)==="end").length,0), [subs]);
-  const quizT  = useMemo(() => Object.values(subs).reduce((a,p)=>a+p.filter(x=>getET(x)==="quiz").length,0), [subs]);
+  const years = useMemo(() => {
+    const y = new Set<number>();
+    Object.values(subs).forEach(papers => papers.forEach(p => y.add(p.year)));
+    return Array.from(y).sort((a, b) => b - a);
+  }, [subs]);
 
-  const filtered = useMemo(() => Object.entries(subs).filter(([s,p]) => {
-    const m = getMeta(s);
-    return s.toLowerCase().includes(q.toLowerCase()) && (!yr||p.some(x=>x.year===yr)) && (!cat||p.some(x=>getET(x)===cat)) && (!dom||m.domain===dom);
-  }), [subs, q, yr, cat, dom]);
+  const doms = useMemo(() => {
+    const d = new Set<string>();
+    Object.keys(subs).forEach(s => d.add(getMeta(s).domain));
+    return Array.from(d);
+  }, [subs]);
+
+  const total = useMemo(() => Object.values(subs).reduce((a, p) => a + p.length, 0), [subs]);
+  const midT  = useMemo(() => Object.values(subs).reduce((a, p) => a + p.filter(x => getET(x) === "mid").length, 0), [subs]);
+  const endT  = useMemo(() => Object.values(subs).reduce((a, p) => a + p.filter(x => getET(x) === "end").length, 0), [subs]);
+  const quizT = useMemo(() => Object.values(subs).reduce((a, p) => a + p.filter(x => getET(x) === "quiz").length, 0), [subs]);
+
+  // ── Filter subjects ───────────────────────────────────────────────────────
+  const filtered = useMemo(
+    () =>
+      Object.entries(subs).filter(([s, papers]) => {
+        const meta = getMeta(s);
+        // Search match
+        if (q && !s.toLowerCase().includes(q.toLowerCase()) &&
+            !meta.domain.toLowerCase().includes(q.toLowerCase()) &&
+            !meta.code.toLowerCase().includes(q.toLowerCase())) return false;
+        // Year filter
+        if (yr && !papers.some(x => x.year === yr)) return false;
+        // Category filter — show subject if it has at least one paper of that type
+        if (cat && !papers.some(x => getET(x) === cat)) return false;
+        // Domain filter
+        if (dom && meta.domain !== dom) return false;
+        return true;
+      }),
+    [subs, q, yr, cat, dom]
+  );
 
   return (
     <Layout>
@@ -111,7 +174,6 @@ export default function SemesterSubjectPYQPage() {
           --r:8px;--rl:14px;--rxl:20px;--tr:190ms cubic-bezier(.4,0,.2,1);
         }
         .pg{font-family:'DM Sans',sans-serif;background:var(--s100);min-height:100vh;color:var(--ink);}
-        /* HERO */
         .hero{background:var(--forest);position:relative;overflow:hidden;padding:72px 24px 80px;}
         .h-topo{position:absolute;inset:0;z-index:0;opacity:.055;
           background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,.5) 39px,rgba(255,255,255,.5) 40px),
@@ -139,14 +201,12 @@ export default function SemesterSubjectPYQPage() {
         .hst2::after{background:linear-gradient(90deg,var(--teal),#14b8a6);}
         .hsnum{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:#fff;line-height:1;}
         .hslbl{font-family:'Fira Code',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.33);margin-top:3px;}
-        /* MAIN */
         .main{max-width:1200px;margin:0 auto;padding:52px 24px 120px;}
         .shed{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid var(--bd);position:relative;}
         .shed::after{content:'';position:absolute;bottom:-2px;left:0;width:48px;height:2px;background:var(--forest);}
         .stl{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--ink);letter-spacing:-.02em;line-height:1.1;}
         .ssl{font-size:12px;color:var(--ink4);margin-top:4px;}
         .smt{font-family:'Fira Code',monospace;font-size:10px;color:var(--ink4);letter-spacing:1px;display:flex;align-items:center;gap:6px;padding-bottom:2px;}
-        /* CAT GRID */
         .cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:56px;}
         @media(max-width:1000px){.cgrid{grid-template-columns:repeat(2,1fr);}}
         @media(max-width:560px){.cgrid{grid-template-columns:1fr;}}
@@ -174,14 +234,10 @@ export default function SemesterSubjectPYQPage() {
         .ccard.sel.ca .ccstatus{background:#92400e;color:#fff;}
         .ccico{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;border:1.5px solid var(--bd);transition:all var(--tr);}
         .ccico svg{width:22px;height:22px;}
-        .cm .ccico{background:#eff6ff;}
-        .cm .ccico svg{color:#2563eb;}
-        .ce .ccico{background:var(--sage);}
-        .ce .ccico svg{color:var(--f2);}
-        .cq .ccico{background:#f5f3ff;}
-        .cq .ccico svg{color:#6d28d9;}
-        .ca .ccico{background:#fffbeb;}
-        .ca .ccico svg{color:#92400e;}
+        .cm .ccico{background:#eff6ff;}.cm .ccico svg{color:#2563eb;}
+        .ce .ccico{background:var(--sage);}.ce .ccico svg{color:var(--f2);}
+        .cq .ccico{background:#f5f3ff;}.cq .ccico svg{color:#6d28d9;}
+        .ca .ccico{background:#fffbeb;}.ca .ccico svg{color:#92400e;}
         .ccard.sel .ccico{transform:scale(1.06);}
         .ccname{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.02em;margin-bottom:7px;line-height:1.2;}
         .ccdesc{font-size:11.5px;color:var(--ink3);line-height:1.7;margin-bottom:18px;}
@@ -196,7 +252,6 @@ export default function SemesterSubjectPYQPage() {
         .ccard:hover .ccfoot{color:var(--ink);}
         .ccarr{transition:transform var(--tr);}
         .ccard:hover .ccarr{transform:translateX(4px);}
-        /* TOOLBAR */
         .toolbar{background:#fff;border:1.5px solid var(--bd);border-radius:var(--rl);padding:14px 18px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;box-shadow:var(--sh0);}
         .sw{position:relative;flex:1;min-width:220px;}
         .siabs{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--ink4);pointer-events:none;}
@@ -214,7 +269,6 @@ export default function SemesterSubjectPYQPage() {
         .dchip:hover{color:var(--ink3);}
         .rbar{display:flex;align-items:center;justify-content:space-between;padding:0 4px;margin-bottom:22px;font-family:'Fira Code',monospace;font-size:10px;color:var(--ink4);letter-spacing:1px;}
         .rbar strong{color:var(--f2);}
-        /* SUBJECT GRID */
         .sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:12px;}
         @media(max-width:640px){.sgrid{grid-template-columns:1fr;}}
         .sc{background:#fff;border:1.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;transition:all var(--tr);box-shadow:var(--sh0);position:relative;}
@@ -239,7 +293,6 @@ export default function SemesterSubjectPYQPage() {
         .scdesc{padding:10px 18px 8px 71px;font-size:11.5px;color:var(--ink3);line-height:1.65;}
         .scsks{padding:0 18px 15px 71px;display:flex;gap:5px;flex-wrap:wrap;}
         .scsk{font-size:9.5px;color:var(--ink4);padding:2px 7px;border-radius:4px;background:var(--s100);border:1px solid var(--bd);font-family:'Fira Code',monospace;}
-        /* PAPER PANELS */
         .ppwrap{border-top:1.5px solid var(--bd);background:var(--s50);animation:ppin .2s ease;}
         @keyframes ppin{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
         .pprow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;background:var(--bd);}
@@ -259,10 +312,8 @@ export default function SemesterSubjectPYQPage() {
         .ppq .yb:hover{border-color:#8b5cf6;color:#5b21b6;background:#f5f3ff;box-shadow:0 0 0 3px rgba(109,40,217,.1);}
         .yb:hover svg{opacity:1;}
         .ppempty{font-size:11px;color:var(--ink4);font-style:italic;font-family:'DM Sans',sans-serif;}
-        /* EMPTY */
         .empty{text-align:center;padding:80px 24px;border:1.5px dashed var(--bd2);border-radius:var(--rxl);background:#fff;}
         .empty p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:var(--ink4);}
-        /* FOOTER */
         .fsum{margin-top:52px;padding:28px 32px;background:#fff;border:1.5px solid var(--bd);border-radius:var(--rl);box-shadow:var(--sh1);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
         .fsl{display:flex;align-items:center;gap:14px;}
         .fsico{width:48px;height:48px;border-radius:12px;background:var(--sage);border:1.5px solid var(--f5);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -276,7 +327,7 @@ export default function SemesterSubjectPYQPage() {
       `}</style>
 
       <div className="pg">
-        {/* HERO */}
+        {/* ── HERO ── */}
         <div className="hero">
           <div className="h-topo" />
           <div className="h-slash" />
@@ -285,35 +336,44 @@ export default function SemesterSubjectPYQPage() {
             <div className="hbc">
               <GraduationCap size={11} />
               IIT (ISM) Dhanbad
-              <span style={{opacity:.35}}>›</span>
+              <span style={{ opacity: .35 }}>›</span>
               Applied Geophysics
-              <span style={{opacity:.35}}>›</span>
+              <span style={{ opacity: .35 }}>›</span>
               <span className="hbca">{title}</span>
             </div>
             <div className="hkick"><span className="hkdot" />Previous Year Question Papers</div>
             <h1 className="htitle">
-              {title.split(" ").map((w,i,a) => i===a.length-1 ? <em key={i}>{w}</em> : <span key={i}>{w} </span>)}
+              {title.split(" ").map((w, i, a) =>
+                i === a.length - 1
+                  ? <em key={i}>{w}</em>
+                  : <span key={i}>{w}{" "}</span>
+              )}
             </h1>
-            <p className="hsub">Curated archive of mid-semester, end-semester & class quiz papers across all core Applied Geophysics subjects at IIT (ISM) Dhanbad.</p>
+            <p className="hsub">
+              Curated archive of mid-semester, end-semester & class quiz papers across all core Applied Geophysics subjects at IIT (ISM) Dhanbad.
+            </p>
             <div className="hstats">
               {[
-                {n:Object.keys(subs).length,l:"Subjects",c:"hsa",i:<BookMarked size={15}/>},
-                {n:midT,l:"Mid Sem",c:"hsb",i:<Layers size={15}/>},
-                {n:endT,l:"End Sem",c:"hsg",i:<Award size={15}/>},
-                {n:quizT,l:"Quizzes",c:"hsv",i:<HelpCircle size={15}/>},
-                {n:total,l:"Total",c:"hsr",i:<FileText size={15}/>},
-                {n:years[0]??"—",l:"Latest",c:"hst2",i:<Clock size={15}/>},
-              ].map((s,i)=>(
+                { n: Object.keys(subs).length, l: "Subjects", c: "hsa", i: <BookMarked size={15} /> },
+                { n: midT,  l: "Mid Sem", c: "hsb",  i: <Layers size={15} /> },
+                { n: endT,  l: "End Sem", c: "hsg",  i: <Award size={15} /> },
+                { n: quizT, l: "Quizzes", c: "hsv",  i: <HelpCircle size={15} /> },
+                { n: total, l: "Total",   c: "hsr",  i: <FileText size={15} /> },
+                { n: years[0] ?? "—", l: "Latest", c: "hst2", i: <Clock size={15} /> },
+              ].map((s, i) => (
                 <div key={i} className={`hst ${s.c}`}>
-                  <span style={{color:"rgba(255,255,255,.4)"}}>{s.i}</span>
-                  <div><div className="hsnum">{s.n}</div><div className="hslbl">{s.l}</div></div>
+                  <span style={{ color: "rgba(255,255,255,.4)" }}>{s.i}</span>
+                  <div>
+                    <div className="hsnum">{s.n}</div>
+                    <div className="hslbl">{s.l}</div>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* MAIN */}
+        {/* ── MAIN ── */}
         <div className="main">
           {/* Section header */}
           <div className="shed">
@@ -321,30 +381,53 @@ export default function SemesterSubjectPYQPage() {
               <div className="stl">Examination Categories</div>
               <div className="ssl">Click a card to filter all subjects by exam type · click again to clear</div>
             </div>
-            <div className="smt"><Clock size={11}/>{years.length} years archived</div>
+            <div className="smt"><Clock size={11} />{years.length} years archived</div>
           </div>
 
-          {/* Category cards - 4 columns */}
+          {/* Category cards */}
           <div className="cgrid">
-            {[
-              {id:"mid" as const,cls:"cm",status:"Mid Term",icon:<Layers/>,name:"Mid Semester",desc:"First-half papers covering modules 1–3. Tests conceptual understanding, held mid-semester around Oct/Mar.",sv:midT,sy:years.length,ss:Object.keys(subs).length,cta:"Explore Mid Sem"},
-              {id:"end" as const,cls:"ce",status:"Final Exam",icon:<Award/>,name:"End Semester",desc:"Comprehensive final papers. Full syllabus coverage, higher grade weightage. Held November/April.",sv:endT,sy:years.length,ss:Object.keys(subs).length,cta:"Explore End Sem"},
-              {id:"quiz" as const,cls:"cq",status:"Class Quiz",icon:<PenTool/>,name:"Quiz Papers",desc:"Classroom assessment & surprise test papers. Short-duration, topic-specific evaluations.",sv:quizT,sy:years.length,ss:Object.keys(subs).length,cta:"Explore Quizzes"},
-              {id:null,cls:"ca",status:"Complete",icon:<BookOpen/>,name:"Full Archive",desc:"All mid-sem, end-sem & quiz papers combined in one unified filterable archive view.",sv:total,sy:years.length,ss:Object.keys(subs).length,cta:"Browse All"},
-            ].map(c=>{
-              const isSel = c.id===null ? cat===null : cat===c.id;
-              const arrCol = c.cls==="cm"?"#2563eb":c.cls==="ce"?"var(--f2)":c.cls==="cq"?"#6d28d9":"#92400e";
+            {([
+              {
+                id: "mid" as const, cls: "cm", status: "Mid Term", icon: <Layers />,
+                name: "Mid Semester",
+                desc: "First-half papers covering modules 1–3. Tests conceptual understanding, held mid-semester around Oct/Mar.",
+                sv: midT, sy: years.length, ss: Object.keys(subs).length, cta: "Explore Mid Sem",
+              },
+              {
+                id: "end" as const, cls: "ce", status: "Final Exam", icon: <Award />,
+                name: "End Semester",
+                desc: "Comprehensive final papers. Full syllabus coverage, higher grade weightage. Held November/April.",
+                sv: endT, sy: years.length, ss: Object.keys(subs).length, cta: "Explore End Sem",
+              },
+              {
+                id: "quiz" as const, cls: "cq", status: "Class Quiz", icon: <PenTool />,
+                name: "Quiz Papers",
+                desc: "Classroom assessment & surprise test papers. Short-duration, topic-specific evaluations.",
+                sv: quizT, sy: years.length, ss: Object.keys(subs).length, cta: "Explore Quizzes",
+              },
+              {
+                id: null, cls: "ca", status: "Complete", icon: <BookOpen />,
+                name: "Full Archive",
+                desc: "All mid-sem, end-sem & quiz papers combined in one unified filterable archive view.",
+                sv: total, sy: years.length, ss: Object.keys(subs).length, cta: "Browse All",
+              },
+            ] as const).map(c => {
+              const isSel = c.id === null ? cat === null : cat === c.id;
+              const arrCol = c.cls === "cm" ? "#2563eb" : c.cls === "ce" ? "var(--f2)" : c.cls === "cq" ? "#6d28d9" : "#92400e";
               return (
-                <div key={c.cls} className={`ccard ${c.cls}${isSel?" sel":""}`}
-                  onClick={()=>c.id===null ? setCat(null) : setCat(cat===c.id?null:c.id)}>
-                  <div className="ccbar"/>
+                <div
+                  key={c.cls}
+                  className={`ccard ${c.cls}${isSel ? " sel" : ""}`}
+                  onClick={() => c.id === null ? setCat(null) : setCat(cat === c.id ? null : c.id)}
+                >
+                  <div className="ccbar" />
                   <div className="ccbody">
-                    <div className="ccstatus">{isSel?"✓ Active":c.status}</div>
+                    <div className="ccstatus">{isSel ? "✓ Active" : c.status}</div>
                     <div className="ccico">{c.icon}</div>
                     <div className="ccname">{c.name}</div>
                     <div className="ccdesc">{c.desc}</div>
                   </div>
-                  <div className="ccdiv"/>
+                  <div className="ccdiv" />
                   <div className="ccstats">
                     <div className="ccst"><div className="ccsv">{c.sv}+</div><div className="ccsk">Papers</div></div>
                     <div className="ccst"><div className="ccsv">{c.sy}</div><div className="ccsk">Years</div></div>
@@ -352,7 +435,7 @@ export default function SemesterSubjectPYQPage() {
                   </div>
                   <div className="ccfoot">
                     <span>{c.cta}</span>
-                    <ArrowRight size={14} className="ccarr" style={{color:arrCol}}/>
+                    <ArrowRight size={14} className="ccarr" style={{ color: arrCol }} />
                   </div>
                 </div>
               );
@@ -362,109 +445,151 @@ export default function SemesterSubjectPYQPage() {
           {/* Toolbar */}
           <div className="toolbar">
             <div className="sw">
-              <Search className="siabs" size={14}/>
-              <input className="sinp" placeholder="Search subjects by name, code, or domain…" value={q} onChange={e=>setQ(e.target.value)}/>
-              {q && <button className="scl" onClick={()=>setQ("")}><X size={13}/></button>}
+              <Search className="siabs" size={14} />
+              <input
+                className="sinp"
+                placeholder="Search subjects by name, code, or domain…"
+                value={q}
+                onChange={e => setQ(e.target.value)}
+              />
+              {q && <button className="scl" onClick={() => setQ("")}><X size={13} /></button>}
             </div>
-            {years.length>0 && (
+            {years.length > 0 && (
               <div className="frow">
-                <span className="flbl"><Filter size={9}/> Year</span>
-                {years.map(y=>(
-                  <button key={y} className={`chip${yr===y?" cy":""}`} onClick={()=>setYr(yr===y?null:y)}>{y}</button>
+                <span className="flbl"><Filter size={9} /> Year</span>
+                {years.map(y => (
+                  <button key={y} className={`chip${yr === y ? " cy" : ""}`} onClick={() => setYr(yr === y ? null : y)}>{y}</button>
                 ))}
               </div>
             )}
-            <div className="frow">
-              <span className="flbl"><Grid size={9}/> Domain</span>
-              {doms.map(d=>{
-                const dc=DC[d]??{fg:"#44403c",bg:"#f5f5f4",bd:"#d6d3d1"};
-                const isA=dom===d;
-                return (
-                  <button key={d} className="dchip"
-                    style={isA?{background:dc.bg,borderColor:dc.bd,color:dc.fg}:{}}
-                    onClick={()=>setDom(dom===d?null:d)}>{d}</button>
-                );
-              })}
-            </div>
+            {doms.length > 0 && (
+              <div className="frow">
+                <span className="flbl"><Grid size={9} /> Domain</span>
+                {doms.map(d => {
+                  const dc = DC[d] ?? { fg: "#44403c", bg: "#f5f5f4", bd: "#d6d3d1" };
+                  const isA = dom === d;
+                  return (
+                    <button
+                      key={d}
+                      className="dchip"
+                      style={isA ? { background: dc.bg, borderColor: dc.bd, color: dc.fg } : {}}
+                      onClick={() => setDom(dom === d ? null : d)}
+                    >
+                      {d}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <div className="rbar">
-            <span>Showing <strong>{filtered.length}</strong> of {Object.keys(subs).length} subjects{cat&&<> · <strong>{cat==="mid"?"Mid Semester":cat==="end"?"End Semester":"Quiz Papers"}</strong></>}{yr&&<> · <strong>{yr}</strong></>}{dom&&<> · <strong>{dom}</strong></>}</span>
-            <span>{filtered.reduce((a,[,p])=>a+p.length,0)} papers in view</span>
+            <span>
+              Showing <strong>{filtered.length}</strong> of {Object.keys(subs).length} subjects
+              {cat && <> · <strong>{cat === "mid" ? "Mid Semester" : cat === "end" ? "End Semester" : "Quiz Papers"}</strong></>}
+              {yr  && <> · <strong>{yr}</strong></>}
+              {dom && <> · <strong>{dom}</strong></>}
+            </span>
+            <span>{filtered.reduce((a, [, p]) => a + p.length, 0)} papers in view</span>
           </div>
 
           {/* Subject cards */}
-          {filtered.length===0 ? (
+          {filtered.length === 0 ? (
             <div className="empty"><p>No subjects match the current filters.</p></div>
           ) : (
             <div className="sgrid">
-              {filtered.map(([subject,papers],idx)=>{
-                const meta=getMeta(subject);
-                const dc=DC[meta.domain]??{fg:"#44403c",bg:"#f5f5f4",bd:"#d6d3d1"};
-                const isOp=exp===subject;
-                const midP=papers.filter(p=>getET(p)==="mid").filter(p=>!yr||p.year===yr).sort((a,b)=>b.year-a.year);
-                const endP=papers.filter(p=>getET(p)==="end").filter(p=>!yr||p.year===yr).sort((a,b)=>b.year-a.year);
-                const qP  =papers.filter(p=>getET(p)==="quiz").filter(p=>!yr||p.year===yr).sort((a,b)=>b.year-a.year);
-                const sm=!cat||cat==="mid", se=!cat||cat==="end", sq=!cat||cat==="quiz";
+              {filtered.map(([subject, papers], idx) => {
+                const meta  = getMeta(subject);
+                const dc    = DC[meta.domain] ?? { fg: "#44403c", bg: "#f5f5f4", bd: "#d6d3d1" };
+                const isOp  = exp === subject;
+
+                // Filtered by year if year chip active, then sorted newest first
+                const midP  = papers.filter(p => getET(p) === "mid"  && (!yr || p.year === yr)).sort((a, b) => b.year - a.year);
+                const endP  = papers.filter(p => getET(p) === "end"  && (!yr || p.year === yr)).sort((a, b) => b.year - a.year);
+                const qP    = papers.filter(p => getET(p) === "quiz" && (!yr || p.year === yr)).sort((a, b) => b.year - a.year);
+
+                const sm = !cat || cat === "mid";
+                const se = !cat || cat === "end";
+                const sq = !cat || cat === "quiz";
+
                 return (
-                  <div key={subject} className={`sc${isOp?" op":""}`}>
-                    <div className="scacc" style={{background:`linear-gradient(90deg,${dc.fg},${dc.bd})`}}/>
-                    <div className="schead" onClick={()=>setExp(isOp?null:subject)}>
-                      <div className="scico" style={{background:dc.bg,borderColor:dc.bd}}>
-                        <span style={{color:dc.fg}}>{meta.icon}</span>
+                  <div key={subject} className={`sc${isOp ? " op" : ""}`}>
+                    <div className="scacc" style={{ background: `linear-gradient(90deg,${dc.fg},${dc.bd})` }} />
+                    <div className="schead" onClick={() => setExp(isOp ? null : subject)}>
+                      <div className="scico" style={{ background: dc.bg, borderColor: dc.bd }}>
+                        <span style={{ color: dc.fg }}>{meta.icon}</span>
                       </div>
                       <div className="scinfo">
-                        <div className="sccode">{meta.code} · {String(idx+1).padStart(2,"0")}</div>
+                        <div className="sccode">{meta.code} · {String(idx + 1).padStart(2, "0")}</div>
                         <div className="scname">{subject}</div>
                         <div className="sctags">
-                          <span className="scdt" style={{background:dc.bg,color:dc.fg,border:`1px solid ${dc.bd}`}}>{meta.domain}</span>
-                          <span className="sclt" style={{background:meta.levelBg,color:meta.levelColor,border:`1px solid ${meta.levelColor}30`}}><Star size={8}/>{meta.level}</span>
-                          <span className="scpt">{papers.length} paper{papers.length!==1?"s":""}</span>
+                          <span className="scdt" style={{ background: dc.bg, color: dc.fg, border: `1px solid ${dc.bd}` }}>{meta.domain}</span>
+                          <span className="sclt" style={{ background: meta.levelBg, color: meta.levelColor, border: `1px solid ${meta.levelColor}30` }}>
+                            <Star size={8} />{meta.level}
+                          </span>
+                          <span className="scpt">{papers.length} paper{papers.length !== 1 ? "s" : ""}</span>
                         </div>
                       </div>
-                      <button className="scbtn"><ChevronRight/></button>
+                      <button className="scbtn"><ChevronRight /></button>
                     </div>
+
                     <div className="scdesc">{meta.description}</div>
-                    <div className="scsks">{meta.tags.map(t=><span key={t} className="scsk">{t}</span>)}</div>
+                    <div className="scsks">{meta.tags.map(t => <span key={t} className="scsk">{t}</span>)}</div>
+
                     {isOp && (
                       <div className="ppwrap">
                         <div className="pprow">
                           {sm && (
                             <div className="pp ppm">
                               <div className="pphd">
-                                <div className="pplbl"><span className="ppdot" style={{background:"#3b82f6"}}/>Mid Sem</div>
+                                <div className="pplbl"><span className="ppdot" style={{ background: "#3b82f6" }} />Mid Sem</div>
                                 <span className="ppcnt">{midP.length}</span>
                               </div>
                               <div className="pppills">
-                                {midP.length===0 ? <span className="ppempty">No papers yet</span> : midP.map(p=>(
-                                  <a key={p.year} href={p.pdf} download className="yb"><Download size={10}/>{p.year}</a>
-                                ))}
+                                {midP.length === 0
+                                  ? <span className="ppempty">No papers yet</span>
+                                  : midP.map((p, i) => (
+                                    <a key={`mid-${p.year}-${i}`} href={p.pdf} download className="yb">
+                                      <Download size={10} />
+                                      {p.label ?? p.year}
+                                    </a>
+                                  ))}
                               </div>
                             </div>
                           )}
                           {se && (
                             <div className="pp ppe">
                               <div className="pphd">
-                                <div className="pplbl"><span className="ppdot" style={{background:"var(--f3)"}}/>End Sem</div>
+                                <div className="pplbl"><span className="ppdot" style={{ background: "var(--f3)" }} />End Sem</div>
                                 <span className="ppcnt">{endP.length}</span>
                               </div>
                               <div className="pppills">
-                                {endP.length===0 ? <span className="ppempty">No papers yet</span> : endP.map(p=>(
-                                  <a key={p.year} href={p.pdf} download className="yb"><Download size={10}/>{p.year}</a>
-                                ))}
+                                {endP.length === 0
+                                  ? <span className="ppempty">No papers yet</span>
+                                  : endP.map((p, i) => (
+                                    <a key={`end-${p.year}-${i}`} href={p.pdf} download className="yb">
+                                      <Download size={10} />
+                                      {p.label ?? p.year}
+                                    </a>
+                                  ))}
                               </div>
                             </div>
                           )}
                           {sq && (
                             <div className="pp ppq">
                               <div className="pphd">
-                                <div className="pplbl"><span className="ppdot" style={{background:"#7c3aed"}}/>Quiz</div>
+                                <div className="pplbl"><span className="ppdot" style={{ background: "#7c3aed" }} />Quiz</div>
                                 <span className="ppcnt">{qP.length}</span>
                               </div>
                               <div className="pppills">
-                                {qP.length===0 ? <span className="ppempty">No quizzes yet</span> : qP.map(p=>(
-                                  <a key={p.year} href={p.pdf} download className="yb"><Download size={10}/>{p.year}</a>
-                                ))}
+                                {qP.length === 0
+                                  ? <span className="ppempty">No quizzes yet</span>
+                                  : qP.map((p, i) => (
+                                    <a key={`quiz-${p.year}-${i}`} href={p.pdf} download className="yb">
+                                      <Download size={10} />
+                                      {p.label ?? p.year}
+                                    </a>
+                                  ))}
                               </div>
                             </div>
                           )}
@@ -477,17 +602,22 @@ export default function SemesterSubjectPYQPage() {
             </div>
           )}
 
-          {/* Footer summary */}
+          {/* Footer */}
           <div className="fsum">
             <div className="fsl">
-              <div className="fsico"><BookMarked/></div>
+              <div className="fsico"><BookMarked /></div>
               <div>
                 <div className="fstit">Paper Archive Summary</div>
                 <div className="fssub">IIT (ISM) Dhanbad · Applied Geophysics · {title}</div>
               </div>
             </div>
             <div className="fsr">
-              {[{n:Object.keys(subs).length,l:"Subjects"},{n:midT,l:"Mid Sem"},{n:endT,l:"End Sem"},{n:quizT,l:"Quizzes"}].map(s=>(
+              {[
+                { n: Object.keys(subs).length, l: "Subjects" },
+                { n: midT,  l: "Mid Sem" },
+                { n: endT,  l: "End Sem" },
+                { n: quizT, l: "Quizzes" },
+              ].map(s => (
                 <div key={s.l} className="fsn">
                   <div className="fsnv">{s.n}</div>
                   <div className="fsnl">{s.l}</div>
